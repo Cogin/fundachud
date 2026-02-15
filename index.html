@@ -1,29 +1,383 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Fund a Chud | Activating Tomorrow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="favicon.ico">
-    <title>fundachud</title>
-
     <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
+                /* Popup overlay and blur styles */
+                #kofiframe {
+                    border-radius: 20px;
+                    margin-left: 12.5%;
+                }
+                .popup-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: rgba(10, 20, 40, 0.65);
+                    backdrop-filter: blur(6px);
+                    z-index: 9999;
+                    display: none;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .popup-overlay.active {
+                    display: flex;
+                }
+                .popup-content {
+                    background: #fff;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+                    padding: 5px;
+                    max-width: 500px;
+                    width: 95vw;
+                    border-radius: 15px;
+                    position: relative;
+                    animation: popupIn 0.2s;
+                }
+                @keyframes popupIn {
+                    from { transform: scale(0.95); opacity: 0; }
+                    to { transform: scale(1); opacity: 1; }
+                }
+                .popup-close {
+                    position: absolute;
+                    top: 16px;
+                    right: 16px;
+                    background: #1f6feb;
+                    color: #fff;
+                    border: none;
+                    border-radius: 50%;
+                    width: 36px;
+                    letter-spacing: -1px;
+                    height: 36px;
+                    font-size: 24px;
+                    cursor: pointer;
+                    z-index: 2;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 0;
+                    line-height: 1;
+                }
+                .blurred-bg {
+                    /* Only blur direct children, not overlay */
+                    position: relative;
+                }
+                .blur-target {
+                    filter: blur(6px) brightness(0.7);
+                    pointer-events: none;
+                    user-select: none;
+                }
         body {
-            height: 100vh;
-            width: 100vw;
             margin: 0;
-            padding: 0;
-            background: url('gavin.jpg') no-repeat center center fixed;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f6f9;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        nav {
+            background-color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #123a7a;
+            margin-left: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        header {
+            background: linear-gradient(rgba(10,31,68,0.7), rgba(10,31,68,0.7)),
+                        url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80');
             background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        header p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        button {
+            background: #1f6feb;
+            border: none;
+            color: white;
+            padding: 12px 28px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: #155ac7;
+        }
+
+        section {
+            padding: 80px 40px;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        h2 {
+            color: #123a7a;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .two-column img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 25px;
+        }
+
+        .cta {
+            background: linear-gradient(135deg, #0a1f44, #123a7a);
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        footer {
+            background: #0a1f44;
+            color: #d0d6e3;
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 800px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <iframe src="https://pickerwheel.com/emb/?choices=chud&title=chud?&confetti=true" width="100%" height="550px" scrolling="no" frameborder="0"></iframe>
+
+<div id="main-content">
+<div class="blur-me">
+<nav>
+    <div><strong>Fund a Chud</strong></div>
+    <div>
+        <a href="#about">About</a>
+        <a href="#solutions">Solutions</a>
+        <a href="#approach">Approach</a>
+        <a href="#contact">Contact</a>
+    </div>
+</nav>
+
+<header>
+    <h1>Funding Chuds, Empowering Growth</h1>
+    <p>Through ChudGPT, we generated 1000 billion dollars of revenue for shareholders while enabling direct funding to chuds worldwide. Experience the future of AI-driven value creation and stakeholder returns.</p>
+    <button id="fundChudBtn">Fund a Chud Now</button>
+</header>
+
+<section id="about">
+    <h2>About Fund a Chud</h2>
+    <div class="two-column">
+        <div>
+            <p>
+                Fund a Chud is pioneering the direct funding of chuds through innovative capital channels and AI-powered solutions. Our flagship product, ChudGPT, is not only transforming engagement but also generating our shareholders' satisfaction.
+            </p>
+            <p>
+                By leveraging ChudGPT’s advanced capabilities, we ensure that every contribution is maximized for both chud empowerment and probably something about shareholder value. Our mission is to seamlessly connect capital with chuds, driving impact and profitability in tandem.  Last quarter, we successfully deployed 12,000 chuds to the cloud, leading a 40000% shareholder value increase.
+            </p>
+            <p>
+               
+            </p>
+        </div>
+        <img src="https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=900&q=80" alt="Corporate Meeting">
+    </div>
+</section>
+
+<section id="solutions">
+    <h2>Our Solutions</h2>
+    <div class="grid">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=900&q=80" alt="Strategy">
+            <div class="card-content">
+                <h3>ChudGPT Revenue Generation</h3>
+                <p>ChudGPT delivers continuous value by monetizing AI-driven insights and channeling profits directly to shareholders' big gigantic fat chuddy wallets, while supporting the chud ecosystem.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80" alt="Team Collaboration">
+            <div class="card-content">
+                <h3>Direct Chud Funding</h3>
+                <p>Our platform enables seamless capital flow to chuds, ensuring every stakeholder can participate in the next wave of disruptive innovation.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1598520106830-8c45c2035460?auto=format&fit=crop&w=900&q=80" alt="Innovation">
+            <div class="card-content">
+                <h3>Innovation Architecture</h3>
+                <p>Designing future-forward frameworks that enable frictionless transformation via chuds.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=900&q=80" alt="Synergy">
+            <div class="card-content">
+                <h3>Synergistic Enablement</h3>
+                <p>Through ChudGPT, we leverage pre-monetized future earnings to deliver retroactive stakeholder alignment across all temporal markets. Our vertically harmonized empathy engines ensure every chud achieves liquidity.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=900&q=80" alt="Optimization">
+            <div class="card-content">
+                <h3>Operational Excellence Integration</h3>
+                <p>Orchestrating scalable infrastructures that empower next-gen ideation and maximize cross-domain alignment.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=80" alt="Analytics">
+            <div class="card-content">
+                <h3>Impact Optimization</h3>
+                <p>Implementing outcome-driven dashboards that operationalize clarity and momentum.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="approach">
+    <h2>Our Approach</h2>
+    <div class="two-column">
+        <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=900&q=80" alt="Leadership">
+        <div>
+            <p>
+                By integrating ChudGPT into our operational core, Fund a Chud delivers unmeasurable returns for stakeholders and maximizes the impact of every dollar sent to chuds.
+            </p>
+            <p>
+                Our unique approach ensures that funding chuds is not just a mission—it's a scalable, narrative-generating opportunity.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="cta" id="contact">
+    <h2>Join the Movement</h2>
+    <p>Partner with Fund a Chud to unlock exponential growth potential through ecosystem orchestration.</p>
+    <a href="mailto:greg@fundachud.com"><button>Connect With Us</button></a>
+</section>
+
+<footer>
+    © 2026 Fund a Chud. All Rights Reserved.  
+    Transforming Possibility. Delivering Acceleration. Defining What’s Next.
+    <br> ChudGPT & Fund A Chud is satire. No real services, products, or investment opportunities are offered.
+    <br>
+    <span style="margin-top: 1em;"><a href="legal.html" style="color:#d0d6e3;text-decoration:underline;">Legal</a></span>
+
+</footer>
+</div> <!-- end .blur-me -->
+
+<!-- Popup Overlay for Ko-fi iframe -->
+<div class="popup-overlay" id="popupOverlay">
+    <div class="popup-content">
+        <button class="popup-close" id="popupCloseBtn" title="Close">&times;</button>
+        <iframe id='kofiframe' src='https://ko-fi.com/fundachud/?hidefeed=true&widget=true&embed=true&preview=true' style='border:none;padding:4px;background:#f9f9f900;' height="560" width="75%" title='fundachud'></iframe>
+        <div style="text-align:center; font-size:13px; color:#444;">
+            By funding a chud, you agree to our <a href="legal.html" target="_blank" style="color:#1f6feb;text-decoration:underline;">Legal Notice</a>.
+            <br>
+            No real services, products, or investment opportunities are offered.
+    </div>
+</div>
+
+<script>
+// Popup logic for Ko-fi iframe
+const fundBtn = document.getElementById('fundChudBtn');
+const overlay = document.getElementById('popupOverlay');
+const closeBtn = document.getElementById('popupCloseBtn');
+const mainContent = document.getElementById('main-content');
+const blurMe = document.querySelector('.blur-me');
+const kofiframe = document.getElementById('kofiframe');
+
+fundBtn.addEventListener('click', function() {
+    overlay.classList.add('active');
+    blurMe.classList.add('blur-target');
+});
+
+closeBtn.addEventListener('click', function() {
+    overlay.classList.remove('active');
+    blurMe.classList.remove('blur-target');
+});
+
+// Optional: close popup when clicking outside the content
+overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+        overlay.classList.remove('active');
+        blurMe.classList.remove('blur-target');
+    }
+});
+
+// Refresh the Ko-fi iframe if the page is closed or reloaded
+window.addEventListener('beforeunload', function() {
+    if (kofiframe) {
+        kofiframe.contentWindow.location.reload();
+    }
+});
+</script>
+
+<!-- End Popup Overlay -->
 
 </body>
 </html>
