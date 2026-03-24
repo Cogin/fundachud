@@ -211,6 +211,61 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .chud-flex {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 36px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .chud-flex h2 {
+            font-size: 2rem;
+            margin: 0;
+            text-align: right;
+            min-width: 180px;
+        }
+
+        .chud-card {
+            width: fit-content;
+            max-width: min(680px, 86vw);
+            background: transparent;
+            box-shadow: none;
+            border-radius: 0;
+            overflow: visible;
+        }
+
+        .chud-card img {
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            max-height: min(520px, 70vh);
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+            object-position: center;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.13);
+        }
+
+        .chud-card h3 {
+            margin: 0;
+            padding: 6px 0 12px;
+            line-height: 1;
+        }
+
+        @media (max-width: 700px) {
+            .chud-flex {
+                flex-direction: column;
+                gap: 18px;
+            }
+
+            .chud-flex h2 {
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -233,6 +288,17 @@
     <button id="fundChudBtn">Fund a Chud Now</button>
 </header>
 
+<section id="chud-of-the-day-section" style="display:none; padding: 60px 40px; max-width: 1000px; margin: 0 auto; text-align: center;">
+    <div class="chud-flex">
+        <div class="card"></div>
+        <h2 style="margin-bottom:0;">Chud of the Day:</h2>
+         <div class="card chud-card">
+            <img src="Chud.webp" alt="Chud of the Day">
+            <h3 style="margin-top: 0.5em;">This guy</h3>
+        </div>
+    </div>
+</section>
+
 <section id="about">
     <h2>About Fund a Chud</h2>
     <div class="two-column">
@@ -250,6 +316,10 @@
         <img src="photo-1556761175-4b46a572b786.png" alt="Corporate Meeting">
     </div>
 </section>
+
+
+
+
 
 <section id="solutions">
     <h2>Our Solutions</h2>
@@ -382,6 +452,29 @@ window.addEventListener('beforeunload', function() {
 </script>
 
 <!-- End Popup Overlay -->
+
+<script>
+const CHUDOTD = true
+let CHUDTEXT = "Jame"
+let CHUDIMG = "IMG_1146.jpg"
+
+let oLastModif = new Date(document.lastModified);
+// Toggle Chud of the Day section
+const chudSection = document.getElementById('chud-of-the-day-section');
+const chudToggle = document.getElementById('toggle-chud-section');
+if (CHUDOTD && (new Date().getTime() - oLastModif.getTime() <= 24 * 60 * 60 * 1000)) {
+    chudSection.style.display = 'block';
+        // Update Chud of the Day content
+        const chudImg = chudSection.querySelector('.chud-card img');
+        const chudText = chudSection.querySelector('.chud-card h3');
+        if (chudImg) {
+            chudImg.src = CHUDIMG;
+        }
+        if (chudText) {
+            chudText.textContent = CHUDTEXT;
+        }
+}
+</script>
 
 </body>
 </html>
