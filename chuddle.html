@@ -255,7 +255,8 @@
         const TARGET = "chud";
         const MAX_GUESSES = 6;
         const WORD_LENGTH = 4;
-        const WORD_LIST_URL = "OWL.txt";
+        const WORD_LIST_URL = "CHUDdle/OWL.txt";
+        const ASSET_BASE = "CHUDdle/";
         const START_DATE = new Date(2026, 3, 22);
         const KEYBOARD_ROWS = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
         const validWords = new Set();
@@ -444,11 +445,11 @@
             endWord.textContent = `Answer: ${TARGET.toUpperCase()}`;
             if (didWin) {
                 const winIndex = Math.min(Math.max(guesses.length, 1), MAX_GUESSES);
-                endGif.src = `${winIndex}.gif`;
+                endGif.src = `${ASSET_BASE}${winIndex}.gif`;
                 endGif.alt = `Win in ${winIndex} ${winIndex === 1 ? "guess" : "guesses"}`;
                 endGif.classList.add("active");
             } else {
-                endGif.src = "lose.gif";
+                endGif.src = `${ASSET_BASE}lose.gif`;
                 endGif.alt = "Loss";
                 endGif.classList.add("active");
             }
