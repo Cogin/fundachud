@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chuddle</title>
+    <meta name="description" content="CHUDdle is a quick daily four-letter word game with shareable results.">
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
     <style>
         :root {
             --tile-size: 50px;
@@ -245,8 +248,8 @@
             <textarea class="share-text" id="shareText" rows="6" readonly></textarea>
             <div class="copy-status" id="copyStatus"></div>
             <div class="end-actions">
-                <button id="copyShare">Copy</button>
-                <button id="playAgain">Play Again</button>
+                <button id="copyShare" type="button">Copy</button>
+                <button id="playAgain" type="button">Play Again</button>
             </div>
         </div>
     </div>
@@ -463,6 +466,10 @@
             const endScreen = document.getElementById("endScreen");
             endScreen.classList.remove("active");
             endScreen.setAttribute("aria-hidden", "true");
+            const active = document.activeElement;
+            if (active && typeof active.blur === "function") {
+                active.blur();
+            }
         }
 
         function initBoard() {
@@ -604,6 +611,10 @@
         });
 
         document.getElementById("playAgain").addEventListener("click", () => {
+            const active = document.activeElement;
+            if (active && typeof active.blur === "function") {
+                active.blur();
+            }
             resetGame();
         });
 
