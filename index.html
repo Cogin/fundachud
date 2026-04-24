@@ -165,6 +165,21 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
 
+        .chuddle-media {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+        }
+
+        .chuddle-media img {
+            height: 100%;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.13);
+        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -209,6 +224,11 @@
         @media (max-width: 800px) {
             .two-column {
                 grid-template-columns: 1fr;
+            }
+
+            .chuddle-media img {
+                height: auto;
+                width: 100%;
             }
         }
 
@@ -287,6 +307,24 @@
     <p>Supporting continued engagement through direct funding.</p>
     <button id="fundChudBtn">Fund a Chud Now</button>
 </header>
+
+<section id="chuddle">
+    <h2>New Product: CHUDdle</h2>
+    <div class="two-column">
+        <div>
+            <p>
+                CHUDdle is our daily four-letter word challenge. Quick to play, easy to share, and tuned for maximum chud engagement.
+            </p>
+            <p>
+                A fresh puzzle lands each day with a new game number, mobile-friendly keyboard, and a win screen ready for screenshots.
+            </p>
+            <a href="CHUDdle.html"><button type="button">Play CHUDdle</button></a>
+        </div>
+        <div class="chuddle-media">
+            <img src="CHUDdle.png" alt="CHUDdle preview">
+        </div>
+    </div>
+</section>
 
 <section id="chud-of-the-day-section" style="display:none; padding: 60px 40px; max-width: 1000px; margin: 0 auto; text-align: center;">
     <div class="chud-flex">
