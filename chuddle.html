@@ -4248,6 +4248,8 @@ zyme
         const MAX_GUESSES = 6;
         const WORD_LENGTH = 4;
         const EMBEDDED_WORD_LIST_ID = "wordList";
+        const PROGRESS_COOKIE = "chuddleWinState";
+        const PROGRESS_COOKIE_DAYS = 365;
         const ASSET_BASE = "https://fundachud.com/CHUDdle/";
         const START_DATE = new Date(2026, 3, 22);
         const KEYBOARD_ROWS = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
@@ -4281,6 +4283,92 @@ zyme
                 wordListError = true;
                 console.error("Failed to load embedded word list:", error);
             }
+        }
+
+        function setCookie(name, value, days) {
+            const expires = new Date(Date.now() + days * 86400000).toUTCString();
+            document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+        }
+
+        function getCookie(name) {
+            const prefix = `${name}=`;
+            const parts = document.cookie ? document.cookie.split("; ") : [];
+            for (const part of parts) {
+                if (part.startsWith(prefix)) {
+                    return decodeURIComponent(part.slice(prefix.length));
+                }
+            }
+            return "";
+        }
+
+        function clearCookie(name) {
+            setCookie(name, "", -1);
+        }
+
+        function applyStoredGuess(rowIndex, guess, result) {
+            for (let i = 0; i < WORD_LENGTH; i++) {
+                const tile = document.getElementById(`tile-${rowIndex}-${i}`);
+                if (!tile) continue;
+                tile.textContent = guess[i] || "";
+                tile.classList.add(result[i]);
+            }
+        }
+
+        function saveWinState() {
+            const payload = {
+                day: getDayNumber(),
+                didWin: true,
+                guesses: guesses.slice(),
+                guessResults: guessResults.map((row) => row.slice())
+            };
+            setCookie(PROGRESS_COOKIE, JSON.stringify(payload), PROGRESS_COOKIE_DAYS);
+        }
+
+        function restoreWinState() {
+            const raw = getCookie(PROGRESS_COOKIE);
+            if (!raw) return false;
+            let payload;
+            try {
+                payload = JSON.parse(raw);
+            } catch (error) {
+                clearCookie(PROGRESS_COOKIE);
+                return false;
+            }
+            if (!payload || payload.didWin !== true || payload.day !== getDayNumber()) {
+                clearCookie(PROGRESS_COOKIE);
+                return false;
+            }
+            if (!Array.isArray(payload.guesses) || !Array.isArray(payload.guessResults)) {
+                clearCookie(PROGRESS_COOKIE);
+                return false;
+            }
+            const length = Math.min(payload.guesses.length, payload.guessResults.length);
+            if (length === 0) {
+                clearCookie(PROGRESS_COOKIE);
+                return false;
+            }
+            for (let i = 0; i < length; i++) {
+                const guess = payload.guesses[i];
+                const result = payload.guessResults[i];
+                if (typeof guess !== "string" || guess.length !== WORD_LENGTH) {
+                    clearCookie(PROGRESS_COOKIE);
+                    return false;
+                }
+                if (!Array.isArray(result) || result.length !== WORD_LENGTH) {
+                    clearCookie(PROGRESS_COOKIE);
+                    return false;
+                }
+            }
+
+            guesses = payload.guesses.slice(0, length);
+            guessResults = payload.guessResults.slice(0, length);
+            for (let i = 0; i < length; i++) {
+                applyStoredGuess(i, guesses[i], guessResults[i]);
+                updateKeyboard(guesses[i], guessResults[i]);
+            }
+            gameOver = true;
+            showEndScreen(true);
+            return true;
         }
 
         function isValidGuess(word) {
@@ -4540,6 +4628,7 @@ zyme
                 gameOver = true;
                 launchConfetti();
                 showEndScreen(true);
+                saveWinState();
             } else if (guesses.length >= MAX_GUESSES) {
                 document.getElementById("message").textContent = `Game Over! The word was: ${TARGET}`;
                 gameOver = true;
@@ -4608,7 +4697,9 @@ zyme
         initKeyboard();
         updateGameNumber();
         loadWordList();
-        guesses = [""];
+        if (!restoreWinState()) {
+            guesses = [""];
+        }
     </script>
 </body>
 </html>
