@@ -67,6 +67,13 @@
         .tile.present { background-color: #b59f3b; color: white; border-color: #b59f3b; }
         .tile.absent { background-color: #d3d6da; color: #787c7e; border-color: #d3d6da; }
         .message { margin: 20px 0; font-size: 18px; font-weight: bold; }
+        .see-results {
+            display: none;
+            margin: 6px auto 0;
+        }
+        .see-results.visible {
+            display: inline-block;
+        }
         button {
             padding: 10px 20px;
             font-size: 16px;
@@ -313,6 +320,7 @@
         <div class="game-number" id="gameNumber"></div>
         <div id="board"></div>
         <div class="message" id="message"></div>
+        <button id="seeResultsBtn" class="see-results" type="button">See results</button>
         <div id="keyboard" class="keyboard" aria-label="Keyboard"></div>
     </div>
 
@@ -4265,6 +4273,7 @@ zyme
         let guesses = [];
         let guessResults = [];
         let gameOver = false;
+        let lastGameDidWin = false;
 
         function loadWordList() {
             try {
@@ -4509,6 +4518,8 @@ zyme
         }
 
         function showEndScreen(didWin) {
+            lastGameDidWin = didWin;
+            setResultsButtonVisible(false);
             const endScreen = document.getElementById("endScreen");
             const endTitle = document.getElementById("endTitle");
             const endSubtitle = document.getElementById("endSubtitle");
@@ -4544,6 +4555,13 @@ zyme
             if (active && typeof active.blur === "function") {
                 active.blur();
             }
+        }
+
+        function setResultsButtonVisible(visible) {
+            const button = document.getElementById("seeResultsBtn");
+            if (!button) return;
+            button.classList.toggle("visible", visible);
+            button.setAttribute("aria-hidden", visible ? "false" : "true");
         }
 
         function initBoard() {
@@ -4652,8 +4670,10 @@ zyme
             guesses = [""];
             guessResults = [];
             gameOver = false;
+            lastGameDidWin = false;
             document.getElementById("message").textContent = "";
             hideEndScreen();
+            setResultsButtonVisible(false);
             initBoard();
             resetKeyboard();
         }
@@ -4692,6 +4712,24 @@ zyme
             }
             resetGame();
         });
+
+        const endScreenEl = document.getElementById("endScreen");
+        if (endScreenEl) {
+            endScreenEl.addEventListener("click", (event) => {
+                if (!lastGameDidWin) return;
+                if (event.target !== endScreenEl) return;
+                hideEndScreen();
+                setResultsButtonVisible(true);
+            });
+        }
+
+        const seeResultsBtn = document.getElementById("seeResultsBtn");
+        if (seeResultsBtn) {
+            seeResultsBtn.addEventListener("click", () => {
+                if (!lastGameDidWin) return;
+                showEndScreen(true);
+            });
+        }
 
         initBoard();
         initKeyboard();
