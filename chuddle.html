@@ -4252,7 +4252,7 @@ zyme
 </script>
 
 <script>
-        const TARGET = "chud";
+        const DEFAULT_TARGET = "chud";
         const MAX_GUESSES = 6;
         const WORD_LENGTH = 4;
         const EMBEDDED_WORD_LIST_ID = "wordList";
@@ -4380,10 +4380,6 @@ zyme
             return true;
         }
 
-        function isValidGuess(word) {
-            return validWords.has(word) || word === TARGET;
-        }
-
         function getDayNumber() {
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -4393,16 +4389,28 @@ zyme
             return Math.max(1, diffDays + 1);
         }
 
+        function getTargetWord() {
+            const dayNumber = getDayNumber();
+            if (dayNumber === 5) return "greg";
+            return DEFAULT_TARGET;
+        }
+
+        function isValidGuess(word) {
+            const target = getTargetWord();
+            return validWords.has(word) || word === target;
+        }
+
         function updateGameNumber() {
             const el = document.getElementById("gameNumber");
             el.textContent = `CHUDdle ${getDayNumber()}`;
         }
 
         function scoreGuess(guess) {
+            const target = getTargetWord();
             const result = [];
             for (let i = 0; i < WORD_LENGTH; i++) {
-                if (guess[i] === TARGET[i]) result.push("correct");
-                else if (TARGET.includes(guess[i])) result.push("present");
+                if (guess[i] === target[i]) result.push("correct");
+                else if (target.includes(guess[i])) result.push("present");
                 else result.push("absent");
             }
             return result;
@@ -4527,10 +4535,11 @@ zyme
             const endGif = document.getElementById("endGif");
             const shareText = document.getElementById("shareText");
             const copyStatus = document.getElementById("copyStatus");
+            const target = getTargetWord();
 
             endTitle.textContent = didWin ? "You won!" : "Game Over";
             endSubtitle.textContent = `CHUDdle ${getDayNumber()} · ${didWin ? guesses.length : "X"}/${MAX_GUESSES}`;
-            endWord.textContent = `Answer: ${TARGET.toUpperCase()}`;
+            endWord.textContent = `Answer: ${target.toUpperCase()}`;
             if (didWin) {
                 const winIndex = Math.min(Math.max(guesses.length, 1), MAX_GUESSES);
                 endGif.src = `${ASSET_BASE}${winIndex}.gif`;
@@ -4641,14 +4650,15 @@ zyme
             guessResults.push(result);
             updateKeyboard(currentGuess, result);
 
-            if (currentGuess === TARGET) {
+            const target = getTargetWord();
+            if (currentGuess === target) {
                 document.getElementById("message").textContent = "You won!";
                 gameOver = true;
                 launchConfetti();
                 showEndScreen(true);
                 saveWinState();
             } else if (guesses.length >= MAX_GUESSES) {
-                document.getElementById("message").textContent = `Game Over! The word was: ${TARGET}`;
+                document.getElementById("message").textContent = `Game Over! The word was: ${target}`;
                 gameOver = true;
                 showEndScreen(false);
             } else {
